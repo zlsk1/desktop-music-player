@@ -8,7 +8,7 @@ module.exports = {
     'import'
   ],
   env: {
-    brower: true,
+    browser: true,
     node: true
   },
   parserOptions: {
