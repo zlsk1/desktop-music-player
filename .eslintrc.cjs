@@ -48,6 +48,7 @@ module.exports = {
       }
     ],
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    'import/prefer-default-export': [0, 'any'],
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': [2, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
     'comma-dangle': [2, 'never'],
@@ -58,6 +59,8 @@ module.exports = {
       VariableDeclarator: 'first'
     }],
     'no-unused-vars': 1,
-    'no-console': 0
+    'no-console': 0,
+    treatUndefinedAsUnspecified: 0,
+    'arrow-body-style': [0, 'never']
   }
 }

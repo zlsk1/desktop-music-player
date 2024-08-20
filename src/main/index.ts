@@ -1,31 +1,71 @@
 import {
-  app, shell, BrowserWindow, ipcMain
+  app, shell, BrowserWindow, ipcMain, Tray, Menu
 } from 'electron'
-import { join } from 'path'
+import path from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import type { BrowserWindow as BrowserWindowType } from 'electron'
+import { getNativeImagePath } from './utils'
 
-function createWindow(): void {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 740,
-    show: false,
-    autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? {} : {}),
-    webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+let mainWindow: BrowserWindowType | null = null
+
+function setThumbarButtons() {
+  mainWindow?.setThumbarButtons([
+    {
+      tooltip: '上一首',
+      icon: getNativeImagePath('skip-back-fill.png'),
+      click() { console.log('button2 clicked.') }
+    },
+    {
+      tooltip: '播放',
+      icon: getNativeImagePath('play-fill.png'),
+      click() { console.log('button1 clicked') }
+    },
+    {
+      tooltip: '下一首',
+      icon: getNativeImagePath('skip-forward-fill.png'),
+      click() { console.log('button2 clicked.') }
     }
+  ])
+}
+
+function watchMainWindow() {
+  if (!mainWindow) return
+  mainWindow.on('ready-to-show', () => {
+    mainWindow?.show()
+    setThumbarButtons()
   })
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
+  mainWindow.on('show', () => {
+    setThumbarButtons()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
+}
+
+function createWindow(): void {
+  // Create the browser window.
+  mainWindow = new BrowserWindow({
+    width: 1000,
+    height: 740,
+    show: false,
+    autoHideMenuBar: true,
+    frame: false,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      height: 10,
+      color: '#409eff'
+    },
+    ...(process.platform === 'linux' ? {} : {}),
+    webPreferences: {
+      preload: path.join(__dirname, '../preload/index.js'),
+      sandbox: false
+    }
+  })
+
+  watchMainWindow()
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
@@ -33,8 +73,41 @@ function createWindow(): void {
     mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL)
   }
   else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
   }
+}
+
+function setTasks() {
+  app.setUserTasks([
+    {
+      program: process.execPath,
+      arguments: '--new-window',
+      iconPath: process.execPath,
+      iconIndex: 0,
+      title: 'New Window',
+      description: 'Create a new window'
+    }
+  ])
+}
+
+function setTray() {
+  const trayIcon = getNativeImagePath('play-fill.png')
+  const tray = new Tray(trayIcon)
+
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: '退出',
+      type: 'normal',
+      icon: getNativeImagePath('logout-circle-line.png')
+    },
+    {
+      label: '设置',
+      type: 'normal',
+      icon: getNativeImagePath('settings-line.png')
+    }
+  ])
+  tray.setToolTip('This is my application.')
+  tray.setContextMenu(contextMenu)
 }
 
 // This method will be called when Electron has finished
@@ -43,6 +116,9 @@ function createWindow(): void {
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
+
+  setTasks()
+  setTray()
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
