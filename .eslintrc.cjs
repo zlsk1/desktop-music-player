@@ -47,7 +47,7 @@ module.exports = {
         tsx: 'never'
       }
     ],
-    'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    'import/no-extraneous-dependencies': [0],
     'import/prefer-default-export': [0, 'any'],
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': [2, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],

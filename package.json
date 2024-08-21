@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
-    "@electron-toolkit/utils": "^3.0.0"
+    "@electron-toolkit/utils": "^3.0.0",
+    "@remixicon/react": "^4.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.8",

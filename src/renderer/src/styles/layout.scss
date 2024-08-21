@@ -1,0 +1,27 @@
+@use './variables.css';
+
+.layout-header {
+  height: var(--headerHeight);
+  line-height: 60px;
+
+  .layout-header-icons {
+
+    i {
+      padding: 0 10px;
+      color: #666;
+      cursor: pointer;
+      transition: color .3s;
+      &:hover {
+        color: #333;
+      }
+    }
+  }
+}
+
+.layout-sidebar {
+  height: calc(100vh - var(--headerHeight));
+
+  :where(.css-dev-only-do-not-override-3rgfp1).ant-menu-light.ant-menu-root.ant-menu-inline {
+    border-inline-end: none;
+  }
+}

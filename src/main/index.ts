@@ -54,10 +54,10 @@ function createWindow(): void {
     autoHideMenuBar: true,
     frame: false,
     titleBarStyle: 'hidden',
-    titleBarOverlay: {
-      height: 10,
-      color: '#409eff'
-    },
+    // titleBarOverlay: {
+    //   height: 10,
+    //   color: '#409eff'
+    // },
     ...(process.platform === 'linux' ? {} : {}),
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
