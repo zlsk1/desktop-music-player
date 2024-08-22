@@ -7,16 +7,6 @@
 
   .layout-header-icons {
     -webkit-app-region: no-drag;
-
-    i {
-      padding: 0 10px;
-      color: #666;
-      cursor: pointer;
-      transition: color .3s;
-      &:hover {
-        color: #333;
-      }
-    }
   }
 }
 

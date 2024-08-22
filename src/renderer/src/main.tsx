@@ -1,4 +1,5 @@
 import './styles/base.css'
+import './styles/common.scss'
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'

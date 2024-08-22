@@ -1,0 +1,26 @@
+.player {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  height: 80px;
+  background-color: #fff;
+
+  .control-icon {
+    margin: 0 10px;
+    color: #999;
+    cursor: pointer;
+    transition: color .3s;
+
+    &:hover {
+      color: #666;
+    }
+  }
+
+  .next, .prev {
+    color: #666;
+
+    &:hover {
+      color: #333;
+    }
+  }
+}

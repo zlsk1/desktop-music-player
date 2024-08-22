@@ -1,6 +1,7 @@
 import LayoutHeader from './layout-header'
 import LayoutSidebar from './layout-sidebar'
 import LayoutMain from './layout-main'
+import Player from '../components/player'
 import '../styles/layout.scss'
 
 function Layout(): JSX.Element {
@@ -11,6 +12,7 @@ function Layout(): JSX.Element {
         <LayoutSidebar />
         <LayoutMain />
       </main>
+      <Player />
     </>
   )
 }

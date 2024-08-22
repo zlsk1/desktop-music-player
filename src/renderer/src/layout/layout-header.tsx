@@ -50,15 +50,15 @@ function LayoutHeader(): JSX.Element {
             <span className="select-none">my-netease-cloud-music</span>
           </div>
           <div className="layout-header-icons flex items-center">
-            <i><Setting size={iconSize} /></i>
+            <i className="icon"><Setting size={iconSize} /></i>
             <Divider type="vertical" style={{ borderInlineStart: '1px solid #ccc' }} />
-            <i><Subtract size={iconSize} onClick={blurWindow} /></i>
+            <i className="icon"><Subtract size={iconSize} onClick={blurWindow} /></i>
             {
               isMaximized
-                ? <i><FullscreenExit size={iconSize} onClick={() => handleMaximize(false)} /></i>
-                : <i><Fullscreen size={iconSize} onClick={() => handleMaximize(true)} /></i>
+                ? <i className="icon"><FullscreenExit size={iconSize} onClick={() => handleMaximize(false)} /></i>
+                : <i className="icon"><Fullscreen size={iconSize} onClick={() => handleMaximize(true)} /></i>
             }
-            <i><Close size={iconSize} onClick={closeWindow} /></i>
+            <i className="icon"><Close size={iconSize} onClick={closeWindow} /></i>
           </div>
         </div>
       </header>
