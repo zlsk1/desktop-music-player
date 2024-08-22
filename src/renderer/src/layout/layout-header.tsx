@@ -51,8 +51,8 @@ function LayoutHeader(): JSX.Element {
             <span className="select-none">my-netease-cloud-music</span>
           </div>
           <div className="layout-header-icons flex items-center">
-            <Link to="/setting" className="icon">
-              <Setting size={iconSize} />
+            <Link to="/setting">
+              <i className="icon"><Setting size={iconSize} /></i>
             </Link>
             <Divider type="vertical" style={{ borderInlineStart: '1px solid #ccc' }} />
             <i className="icon"><Subtract size={iconSize} onClick={blurWindow} /></i>

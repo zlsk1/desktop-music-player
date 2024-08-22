@@ -5,7 +5,7 @@ import {
 function Info(): JSX.Element {
   return (
     <div className="flex flex-1 px-6">
-      <div className="w-10 h10 mr-2 bg-slate-500 rounded-full">
+      <div className="w-10 h-10 mr-2 bg-slate-500 rounded-full">
         <img src="" alt="" />
       </div>
       <div>
