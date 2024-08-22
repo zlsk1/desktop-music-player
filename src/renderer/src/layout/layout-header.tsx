@@ -8,6 +8,7 @@ import {
 } from '@remixicon/react'
 import { Divider, Modal, Checkbox } from 'antd'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 function LayoutHeader(): JSX.Element {
   const [isMaximized, setMaximize] = useState(false)
@@ -50,7 +51,9 @@ function LayoutHeader(): JSX.Element {
             <span className="select-none">my-netease-cloud-music</span>
           </div>
           <div className="layout-header-icons flex items-center">
-            <i className="icon"><Setting size={iconSize} /></i>
+            <Link to="/setting" className="icon">
+              <Setting size={iconSize} />
+            </Link>
             <Divider type="vertical" style={{ borderInlineStart: '1px solid #ccc' }} />
             <i className="icon"><Subtract size={iconSize} onClick={blurWindow} /></i>
             {

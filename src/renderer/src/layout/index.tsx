@@ -6,14 +6,14 @@ import '../styles/layout.scss'
 
 function Layout(): JSX.Element {
   return (
-    <>
+    <div className="h-full">
       <LayoutHeader />
       <main className="flex">
         <LayoutSidebar />
         <LayoutMain />
       </main>
       <Player />
-    </>
+    </div>
   )
 }
 
