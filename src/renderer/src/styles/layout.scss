@@ -3,8 +3,10 @@
 .layout-header {
   height: var(--headerHeight);
   line-height: 60px;
+  -webkit-app-region: drag;
 
   .layout-header-icons {
+    -webkit-app-region: no-drag;
 
     i {
       padding: 0 10px;

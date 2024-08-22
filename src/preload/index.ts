@@ -1,16 +1,25 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
-const api = {}
+const api = {
+  hideWindow: () => ipcRenderer.send('hide-window'),
+  blurWindow: () => ipcRenderer.send('blur-window'),
+  setMaximizeStatus: (status: boolean) => {
+    if (status) ipcRenderer.send('set-maximize')
+    else ipcRenderer.send('un-maximize')
+  }
+}
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
+const windowStatus = {
+  isMaximized: () => ipcRenderer.invoke('get-maximize-status')
+}
+
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
+    contextBridge.exposeInMainWorld('windowStatus', windowStatus)
   }
   catch (error) {
     console.error(error)
@@ -18,9 +27,9 @@ if (process.contextIsolated) {
 }
 else {
   // @ts-ignore (define in dts)
-  // eslint-disable-next-line no-undef
   window.electron = electronAPI
   // @ts-ignore (define in dts)
-  // eslint-disable-next-line no-undef
   window.api = api
+  // @ts-ignore (define in dts)
+  window.windowStatus = windowStatus
 }
