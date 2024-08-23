@@ -8,6 +8,9 @@ const api = {
   setMaximizeStatus: (status: boolean) => {
     if (status) ipcRenderer.send('set-maximize')
     else ipcRenderer.send('un-maximize')
+  },
+  getLocalMusic: async (paths: string[]) => {
+    return ipcRenderer.invoke('get-local-music', paths)
   }
 }
 
