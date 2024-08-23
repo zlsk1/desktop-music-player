@@ -3,7 +3,8 @@
   "include": [
     "src/renderer/src/env.d.ts",
     "src/renderer/src/**/*",
-    "src/preload/*.d.ts"
+    "src/common/types",
+    "src/common/utils",
   ],
   "compilerOptions": {
     "composite": true,
