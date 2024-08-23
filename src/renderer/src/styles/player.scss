@@ -1,8 +1,10 @@
+@use './variables.scss' as *;
+
 .player {
-  position: fixed;
+  position: sticky;
   bottom: 0;
   right: 0;
-  height: 80px;
+  height: $playerHeight;
   background-color: #fff;
 
   .control-icon {

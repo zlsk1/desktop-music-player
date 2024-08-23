@@ -1,26 +1,32 @@
-@use './variables.css';
+@use './variables.scss' as *;
+@use './mixins.scss' as *;
 
-.layout-header {
-  height: var(--headerHeight);
-  line-height: 60px;
-  -webkit-app-region: drag;
+.layout-container {
 
-  .layout-header-icons {
-    -webkit-app-region: no-drag;
+  .layout-header {
+    height: $headerHeight;
+    line-height: 60px;
+    -webkit-app-region: drag;
+
+    .layout-header-icons {
+      -webkit-app-region: no-drag;
+    }
   }
-}
 
-.layout-main {
-  margin-left: 20%;
-}
+  .layout-content {
+    display: flex;
+    height: calc(100vh - $playerHeight - $headerHeight);
 
-.layout-sidebar {
-  position: fixed;
-  top: var(--headerHeight);
-  left: 0;
-  height: calc(100vh - var(--headerHeight));
+    .layout-main {
+      overflow: auto;
+      @include scroll-bar;
+    }
 
-  :where(.css-dev-only-do-not-override-3rgfp1).ant-menu-light.ant-menu-root.ant-menu-inline {
-    border-inline-end: none;
+    .layout-sidebar {
+
+      :where(.css-dev-only-do-not-override-3rgfp1).ant-menu-light.ant-menu-root.ant-menu-inline {
+        border-inline-end: none;
+      }
+    }
   }
 }
