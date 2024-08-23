@@ -13,6 +13,11 @@
     "esModuleInterop": true,
     "removeComments": false,
     "rootDir": ".",
-    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "@renderer/*": [
+        "src/renderer/src/*"
+      ]
+    },
   }
 }
