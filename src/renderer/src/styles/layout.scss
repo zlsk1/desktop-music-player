@@ -10,7 +10,14 @@
   }
 }
 
+.layout-main {
+  margin-left: 20%;
+}
+
 .layout-sidebar {
+  position: fixed;
+  top: var(--headerHeight);
+  left: 0;
   height: calc(100vh - var(--headerHeight));
 
   :where(.css-dev-only-do-not-override-3rgfp1).ant-menu-light.ant-menu-root.ant-menu-inline {

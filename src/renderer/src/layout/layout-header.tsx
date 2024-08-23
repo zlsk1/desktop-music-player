@@ -44,7 +44,7 @@ function LayoutHeader(): JSX.Element {
 
   return (
     <>
-      <header className="layout-header px-4">
+      <header className="layout-header sticky top-0 right-0 px-4 bg-white z-20">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <NeteaseCloudMusic className="mr-2" color="#fc3b5b" size={32} />
