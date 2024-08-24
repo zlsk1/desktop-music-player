@@ -62,6 +62,7 @@ module.exports = {
     'no-unused-vars': 1,
     'no-console': 0,
     treatUndefinedAsUnspecified: 0,
-    'arrow-body-style': [0, 'never']
+    'arrow-body-style': [0, 'never'],
+    'no-param-reassign': [0]
   }
 }

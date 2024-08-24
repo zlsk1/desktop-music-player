@@ -4,7 +4,7 @@ import {
 import path from 'path'
 import { is } from '@electron-toolkit/utils'
 import type { BrowserWindow as BrowserWindowType } from 'electron'
-import { getNativeImagePath } from '../utils'
+import { getNativeImagePath } from '../../common/utils'
 import { ipcMainWindow } from './ipc'
 
 let mainWindow: BrowserWindowType | null = null

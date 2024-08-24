@@ -1,8 +1,9 @@
 import { ipcMain } from 'electron'
 import fg from 'fast-glob'
 import fs from 'fs'
+import dayjs from 'dayjs'
 import type { BrowserWindow, IpcMainInvokeEvent } from 'electron'
-import { getSongNameFromPath, formatBytes } from '@/common/utils'
+import { getSongNameFromPath, formatBytes } from '../../common/utils'
 
 export const ipcMainWindow = (window: BrowserWindow) => {
   ipcMain.on('hide-window', () => window.hide())
@@ -13,9 +14,9 @@ export const ipcMainWindow = (window: BrowserWindow) => {
     return window.isMaximized()
   })
   ipcMain.handle('get-local-music', (event: IpcMainInvokeEvent, filepaths: string[]) => {
-    const localMucisPaths = filepaths.map((fileepath) => {
+    const localMucisPaths = filepaths.map((filepath) => {
       return fg.sync('**/*.mp3', {
-        cwd: fileepath,
+        cwd: filepath,
         absolute: true,
         onlyFiles: true
       })
@@ -29,7 +30,7 @@ export const ipcMainWindow = (window: BrowserWindow) => {
       result.push({
         name: getSongNameFromPath(flatpath),
         size: formatBytes(status.size),
-        ctime: status.birthtime.toLocaleString(),
+        ctime: dayjs(status.birthtime).format('YYYY-MM-DD'),
         path: decodeURI(flatpath),
         key
       })
