@@ -7,15 +7,7 @@ import {
   RiArrowRightWideLine as ArrowRight,
   RiMoreLine as More
 } from '@remixicon/react'
-
-interface DataType {
-  name: string;
-  ctime: string;
-  size: string;
-  key?:string,
-  path: string,
-  duration: number
-}
+import type { LosicMusic } from '@/common/types/window'
 
 const { Column } = Table
 
@@ -27,7 +19,7 @@ const moreContent = (
 )
 
 function LocalMusic(): JSX.Element {
-  const [localMusic, setLocalMusic] = useState<DataType[]>([])
+  const [localMusic, setLocalMusic] = useState<LosicMusic[]>([])
   const [isOpen, setIsOpen] = useState(false)
 
   const getLocalMusic = async () => {

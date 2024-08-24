@@ -3,7 +3,7 @@ import {
 } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import type { BrowserWindow as BrowserWindowType } from 'electron'
-import { getNativeImagePath } from './utils'
+import { getNativeImagePath } from '@/common/utils'
 import { createMainWindow } from './win-main/index'
 
 let mainWindow: BrowserWindowType | null = null

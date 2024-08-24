@@ -2,7 +2,7 @@ import { ipcMain } from 'electron'
 import fg from 'fast-glob'
 import fs from 'fs'
 import type { BrowserWindow, IpcMainInvokeEvent } from 'electron'
-import { getSongNameFromPath, formatBytes } from '../utils'
+import { getSongNameFromPath, formatBytes } from '@/common/utils'
 
 export const ipcMainWindow = (window: BrowserWindow) => {
   ipcMain.on('hide-window', () => window.hide())
