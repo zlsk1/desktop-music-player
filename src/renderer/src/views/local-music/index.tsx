@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import {
-  Table, Button, Modal, Checkbox, Dropdown, Input
+  Table, Button, Modal, Checkbox, Dropdown, Input, Col
 } from 'antd'
 import {
   RiPlayFill as Play,
@@ -12,12 +12,15 @@ import {
   RiFile3Fill as File,
   RiSearchLine as Search
 } from '@remixicon/react'
+import { useSettingStore } from '@renderer/store'
 import dayjs from 'dayjs'
 import './index.scss'
+import { produce } from 'immer'
 import type { TableColumnProps, MenuProps } from 'antd'
 import type { LosicMusic } from '@/common/types/window'
 
 const { Column } = Table
+const CheckboxGroup = Checkbox.Group
 
 const menuItems: MenuProps['items'] = [
   {
@@ -31,25 +34,25 @@ const menuItems: MenuProps['items'] = [
     icon: <AddBox size={20} color="#686f7e" />
   },
   {
+    key: '2',
     type: 'divider'
   },
   {
-    key: '2',
+    key: '3',
     label: '打开文件所在目录',
     icon: <File size={20} color="#686f7e" />
   },
   {
-    key: '3',
+    key: '4',
     label: '从列表中删除',
     icon: <Detele size={20} color="#686f7e" />
   },
   {
-    key: '4',
+    key: '5',
     label: '从磁盘中删除',
     icon: <Detele size={20} color="#686f7e" />
   }
 ]
-
 const columnData: TableColumnProps[] = [
   {
     title: '#',
@@ -61,7 +64,7 @@ const columnData: TableColumnProps[] = [
     render: (val, record, index) => {
       return (
         <div className="flex">
-          <span className="font-mono">{ index < 10 ? `0${index + 1}` : index + 1}</span>
+          <span className="font-mono">{ index < 9 ? `0${index + 1}` : index + 1}</span>
           <i className="icon"><Play /></i>
         </div>
       )
@@ -107,19 +110,35 @@ const columnData: TableColumnProps[] = [
 ]
 
 function LocalMusic(): JSX.Element {
+  const settingStore = useSettingStore()
+  const { localMusicDirectory, localMusicDirectorySelected } = settingStore && settingStore.setting
   const [localMusic, setLocalMusic] = useState<LosicMusic[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [list, setlist] = useState(localMusicDirectorySelected)
 
-  const getLocalMusic = async () => {
-    const res = await window.api.getLocalMusic(['F:/CloudMusic'])
-    setIsLoading(false)
-    setLocalMusic(res)
+  useEffect(
+    () => {
+      async function getLocalMusic() {
+        const initialLocalMusic = await window.api.getLocalMusic(['F:/CloudMusic'])
+        setLocalMusic(initialLocalMusic)
+        setIsLoading(false)
+      }
+      getLocalMusic()
+    },
+    []
+  )
+
+  const setDirectory = () => {
+    setIsOpen(false)
+    settingStore.updateSetting(produce(settingStore.setting, (draftState) => {
+      draftState.localMusicDirectorySelected = list
+    }))
   }
 
-  useEffect(() => {
-    getLocalMusic()
-  })
+  const onChange = (val: string[]) => {
+    setlist(val)
+  }
 
   return (
     <>
@@ -180,15 +199,24 @@ function LocalMusic(): JSX.Element {
       </div>
       <Modal
         title="已选择的目录"
-        open={isOpen}
         okText="确定"
         cancelText="新增目录"
+        destroyOnClose
         onCancel={() => setIsOpen(false)}
-        onOk={() => setIsOpen(false)}
+        onOk={setDirectory}
+        open={isOpen}
       >
-        <Checkbox>
-          <p>F:/CloudMusic</p>
-        </Checkbox>
+        <CheckboxGroup defaultValue={localMusicDirectorySelected} onChange={onChange}>
+          {
+            localMusicDirectory.map((item) => {
+              return (
+                <Col span={24} className="my-1" key={item}>
+                  <Checkbox value={item}>{item}</Checkbox>
+                </Col>
+              )
+            })
+          }
+        </CheckboxGroup>
       </Modal>
     </>
   )

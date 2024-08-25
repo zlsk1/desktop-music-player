@@ -1,8 +1,10 @@
 import { create } from 'zustand'
+import localforage from 'localforage'
 import { isNil, createSelector } from '../utils'
 
-export interface DefaultSetting {
-  localMusicPath: string[],
+export interface Setting {
+  localMusicDirectory: string[],
+  localMusicDirectorySelected: string[],
   /**
    * @description 退出应用的方式 0为最小化到托盘 1为直接退出
    */
@@ -10,39 +12,40 @@ export interface DefaultSetting {
 }
 
 export interface SettingStore {
-  setting: DefaultSetting,
-  updateSetting: (setting: DefaultSetting) => void,
+  setting: Setting,
+  updateSetting: (setting: Setting) => void,
 }
 
-export const defaultSetting: DefaultSetting = {
-  localMusicPath: ['我的音乐', '下载', 'F:/CloudMusic'],
+export const defaultSetting: Setting = {
+  localMusicDirectory: ['我的音乐', '下载', 'F:/CloudMusic'],
+  localMusicDirectorySelected: ['我的音乐', '下载', 'F:/CloudMusic'],
   exitType: 0
 }
 
-const updateSetting = (newSetting?: Partial<DefaultSetting>) => {
-  const mergeSetting: DefaultSetting = {
-    ...defaultSetting,
-    ...newSetting
-  }
-  localStorage.setItem('setting', JSON.stringify(mergeSetting))
-  return mergeSetting
+const updateSetting = (setting: Setting) => {
+  localforage.setItem('setting', setting)
+  return setting
 }
 
-const getSetting = () => {
-  const setting = localStorage.getItem('setting')
+let initialSettings: Setting | string | null = null
 
-  if (!isNil(setting)) {
-    return JSON.parse(setting) as DefaultSetting
+const getSetting = async () => {
+  initialSettings = await localforage.getItem<string | null>('setting')
+
+  if (!isNil(initialSettings)) {
+    return initialSettings
   }
 
-  const defaultsetting = updateSetting()
+  initialSettings = updateSetting(defaultSetting)
 
-  return defaultsetting
+  return initialSettings
 }
+
+await getSetting()
 
 const useSettingStoreBase = create<SettingStore>((set) => ({
-  setting: getSetting(),
-  updateSetting: (setting: DefaultSetting) => set(() => ({ setting: updateSetting(setting) }))
+  setting: initialSettings as Setting,
+  updateSetting: (setting: Setting) => set(() => ({ setting: updateSetting(setting) }))
 }))
 
 export const useSettingStore = createSelector(useSettingStoreBase)
