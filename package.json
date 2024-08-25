@@ -27,6 +27,7 @@
     "fast-glob": "^3.3.2",
     "immer": "^10.1.1",
     "localforage": "^1.10.0",
+    "music-metadata": "^10.2.0",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
