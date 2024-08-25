@@ -20,6 +20,12 @@ dependencies:
   fast-glob:
     specifier: ^3.3.2
     version: 3.3.2
+  immer:
+    specifier: ^10.1.1
+    version: 10.1.1
+  localforage:
+    specifier: ^1.10.0
+    version: 1.10.0
 
 devDependencies:
   '@types/node':
@@ -96,7 +102,7 @@ devDependencies:
     version: 5.4.1(@types/node@20.16.1)(sass@1.77.8)
   zustand:
     specifier: ^4.5.5
-    version: 4.5.5(@types/react@18.3.3)(react@18.3.1)
+    version: 4.5.5(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1)
 
 packages:
 
@@ -3461,6 +3467,13 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
+  /immediate@3.0.6:
+    resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
+    dev: false
+
+  /immer@10.1.1:
+    resolution: {integrity: sha512-s2MPrmjovJcoMaHtx6K11Ra7oD05NT97w1IC5zpMkT6Atjr7H8LjaDd81iIxUYpMKSRRNMJE703M1Fhr/TctHw==}
+
   /immutable@4.3.7:
     resolution: {integrity: sha512-1hqclzwYwjRDFLjcFxOM5AYkkG0rpFPpr1RLPMEuGczoS7YA8gLhy8SWXYRAA/XwfEHpfo3cw5JGioS32fnMRw==}
     dev: true
@@ -3855,6 +3868,12 @@ packages:
       type-check: 0.4.0
     dev: true
 
+  /lie@3.1.1:
+    resolution: {integrity: sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==}
+    dependencies:
+      immediate: 3.0.6
+    dev: false
+
   /lilconfig@2.1.0:
     resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
     engines: {node: '>=10'}
@@ -3868,6 +3887,12 @@ packages:
   /lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
     dev: true
+
+  /localforage@1.10.0:
+    resolution: {integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==}
+    dependencies:
+      lie: 3.1.1
+    dev: false
 
   /locate-path@6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
@@ -6278,7 +6303,7 @@ packages:
       readable-stream: 3.6.2
     dev: true
 
-  /zustand@4.5.5(@types/react@18.3.3)(react@18.3.1):
+  /zustand@4.5.5(@types/react@18.3.3)(immer@10.1.1)(react@18.3.1):
     resolution: {integrity: sha512-+0PALYNJNgK6hldkgDq2vLrw5f6g/jCInz52n9RTpropGgeAf/ioFUCdtsjCqu4gNhW9D01rUQBROoRjdzyn2Q==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
@@ -6294,6 +6319,7 @@ packages:
         optional: true
     dependencies:
       '@types/react': 18.3.3
+      immer: 10.1.1
       react: 18.3.1
       use-sync-external-store: 1.2.2(react@18.3.1)
     dev: true
