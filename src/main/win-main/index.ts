@@ -3,8 +3,8 @@ import {
 } from 'electron'
 import path from 'path'
 import { is } from '@electron-toolkit/utils'
-import type { BrowserWindow as BrowserWindowType } from 'electron'
-import { getNativeImagePath } from '../../common/utils'
+import type { BrowserWindow as BrowserWindowType, App } from 'electron'
+import { getNativeImagePath } from '../utils'
 import { ipcMainWindow } from './ipc'
 
 let mainWindow: BrowserWindowType | null = null
@@ -46,7 +46,7 @@ function watchMainWindow() {
   })
 }
 
-export function createMainWindow(): BrowserWindowType {
+export function createMainWindow(app: App): BrowserWindowType {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1000,
@@ -63,7 +63,7 @@ export function createMainWindow(): BrowserWindowType {
   })
 
   watchMainWindow()
-  ipcMainWindow(mainWindow)
+  ipcMainWindow(mainWindow, app)
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.

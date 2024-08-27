@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import type { OpenDialogOptions } from 'electron'
 
 // Custom APIs for renderer
 const api = {
@@ -9,9 +10,13 @@ const api = {
     if (status) ipcRenderer.send('set-maximize')
     else ipcRenderer.send('un-maximize')
   },
-  getLocalMusic: async (paths: string[]) => {
-    return ipcRenderer.invoke('get-local-music', paths)
-  }
+  getLocalMusic: (paths: string[]) => ipcRenderer.invoke('get-local-music', paths),
+  openDialog: (options?: OpenDialogOptions) => ipcRenderer.invoke('open-dialog', options),
+  getUserInfo: () => ipcRenderer.invoke('get-user-info'),
+  showItemInFolder: (fullPath: string) => ipcRenderer.send('show-item-in-folder', fullPath),
+  trashItem: (path: string) => ipcRenderer.invoke('trash-item', path),
+  getLocalMusicPath: () => ipcRenderer.invoke('get-local-music-path', 'music'),
+  getLocalDownloadPath: () => ipcRenderer.invoke('get-local-download-path', 'downloads')
 }
 
 const windowStatus = {

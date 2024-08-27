@@ -1,21 +1,26 @@
-import { ipcMain } from 'electron'
+import { ipcMain, dialog, shell } from 'electron'
 import fg from 'fast-glob'
 import fs from 'fs'
+import os from 'os'
 import dayjs from 'dayjs'
-import type { BrowserWindow, IpcMainInvokeEvent } from 'electron'
-import { getSongNameFromPath, formatBytes } from '../../common/utils'
+import type {
+  BrowserWindow, IpcMainInvokeEvent, OpenDialogOptions, App
+} from 'electron'
+import type { LocalMusic } from '../../common/types/global'
+import {
+  getSongNameFromPath, formatBytes, getMusicMetadata, getMusicInfo
+} from '../../common/utils'
+import { normalizePath } from '../utils'
 
-export const ipcMainWindow = (window: BrowserWindow) => {
+export const ipcMainWindow = (window: BrowserWindow, app: App) => {
   ipcMain.on('hide-window', () => window.hide())
   ipcMain.on('blur-window', () => window.blur())
   ipcMain.on('set-maximize', () => window.maximize())
   ipcMain.on('un-maximize', () => window.unmaximize())
-  ipcMain.handle('get-maximize-status', () => {
-    return window.isMaximized()
-  })
-  ipcMain.handle('get-local-music', (event: IpcMainInvokeEvent, filepaths: string[]) => {
+  ipcMain.handle('get-maximize-status', () => window.isMaximized())
+  ipcMain.handle('get-local-music', async (event: IpcMainInvokeEvent, filepaths: string[]): Promise<LocalMusic[]> => {
     const localMucisPaths = filepaths.map((filepath) => {
-      return fg.sync('**/*.mp3', {
+      return fg.sync('**/*.{mp3, mp4, webm, ogg}', {
         cwd: filepath,
         absolute: true,
         onlyFiles: true
@@ -23,19 +28,43 @@ export const ipcMainWindow = (window: BrowserWindow) => {
     })
 
     const flatPaths = localMucisPaths.flat()
-    const result: any[] = []
 
-    flatPaths.forEach((flatpath, key) => {
-      const status = fs.statSync(flatpath)
-      result.push({
-        name: getSongNameFromPath(flatpath),
+    const tasks = flatPaths.map(async (flatPath) => {
+      const status = await fs.promises.stat(flatPath)
+      const metadata = await getMusicMetadata(flatPath)
+      const {
+        title, artist, artists, album, formatDuration, duration
+      } = getMusicInfo(metadata)
+
+      return {
+        title: title || getSongNameFromPath(flatPath),
         size: formatBytes(status.size),
         ctime: dayjs(status.birthtime).format('YYYY-MM-DD'),
-        path: decodeURI(flatpath),
-        key
-      })
+        path: decodeURIComponent(flatPath),
+        key: decodeURIComponent(flatPath),
+        metadata,
+        artist,
+        artists,
+        album,
+        formatDuration,
+        duration
+      }
     })
+
+    const result = await Promise.all(tasks)
 
     return result
   })
+  ipcMain.handle('open-dialog', async (event: IpcMainInvokeEvent, options?: OpenDialogOptions) => {
+    const res = await dialog.showOpenDialog({ ...options })
+    return res
+  })
+  ipcMain.handle('get-user-info', () => os.userInfo())
+  ipcMain.on('show-item-in-folder', (event: IpcMainInvokeEvent, fullPath: string) => shell.showItemInFolder(normalizePath(fullPath)))
+  ipcMain.handle('trash-item', async (event: IpcMainInvokeEvent, path: string) => {
+    const result = await shell.trashItem(normalizePath(path))
+    return result
+  })
+  ipcMain.handle('get-local-music-path', (event: IpcMainInvokeEvent, path: any) => app.getPath(path))
+  ipcMain.handle('get-local-download-path', (event: IpcMainInvokeEvent, path: any) => app.getPath(path))
 }

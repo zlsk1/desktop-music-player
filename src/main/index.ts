@@ -3,7 +3,7 @@ import {
 } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import type { BrowserWindow as BrowserWindowType } from 'electron'
-import { getNativeImagePath } from '../common/utils'
+import { getNativeImagePath } from './utils'
 import { createMainWindow } from './win-main/index'
 
 let mainWindow: BrowserWindowType | null = null
@@ -65,12 +65,12 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  mainWindow = createMainWindow()
+  mainWindow = createMainWindow(app)
 
   app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) mainWindow = createMainWindow()
+    if (BrowserWindow.getAllWindows().length === 0) mainWindow = createMainWindow(app)
   })
 })
 
