@@ -236,12 +236,28 @@ function LocalMusic(): JSX.Element {
       setTableSelection(selectedRowKeys as string[])
     }
   }
+  let audio: HTMLAudioElement | null = null
+  const createAudio = () => {
+    if (audio) return
+    audio = new window.Audio() as HTMLAudioElement
+    audio.controls = false
+    audio.autoplay = true
+    audio.loop = true
+    audio.preload = 'auto'
+    audio.crossOrigin = 'anonymous'
+  }
+  const setSource = (url: string) => {
+    if (!audio) return
+    audio.src = url
+  }
 
   async function getLocalMusic() {
     const initialLocalMusic = await window.api.getLocalMusic(localMusicDirectorySelected)
     setLocalMusic(initialLocalMusic)
     setCopyLocalMusic(initialLocalMusic)
     setIsLoading(false)
+    // createAudio()
+    // setSource(decodeURIComponent(initialLocalMusic[0].path))
   }
 
   useEffect(

@@ -58,7 +58,10 @@ export function createMainWindow(app: App): BrowserWindowType {
     ...(process.platform === 'linux' ? {} : {}),
     webPreferences: {
       preload: path.join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      webSecurity: false,
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true
     }
   })
 
