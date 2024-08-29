@@ -4,6 +4,8 @@ import {
 import {
   Table, Button, Modal, Checkbox, Dropdown, Input, Col, Tooltip, message
 } from 'antd'
+import dayjs from 'dayjs'
+import { produce } from 'immer'
 import {
   RiPlayFill as Play,
   RiArrowRightWideLine as ArrowRight,
@@ -16,14 +18,12 @@ import {
   RiPlayListAddLine as PlayList,
   RiCheckDoubleLine as CheckDouble
 } from '@remixicon/react'
-import { useSettingStore } from '@renderer/store'
-import dayjs from 'dayjs'
+import { useSettingStore, useMusicPlayStore } from '@renderer/store'
+import { escapePath } from '@renderer/utils'
 import './index.scss'
-import { produce } from 'immer'
 import type {
   TableColumnProps, MenuProps, TableProps
 } from 'antd'
-import { escapePath } from '@renderer/utils'
 import type { LocalMusic as LocalMusicType } from '@/common/types/global'
 
 type TableRowSelection<T extends object = object> = TableProps<T>['rowSelection'];
@@ -63,127 +63,6 @@ const menuItems: MenuProps['items'] = [
     icon: <Detele size={20} color="#686f7e" />
   }
 ]
-const columnData: TableColumnProps[] = [
-  {
-    title: '#',
-    width: '10%',
-    key: 'key',
-    dataIndex: 'key',
-    align: 'center',
-    className: 'text-zinc-400',
-    render: (val, record, index) => {
-      return (
-        <div className="flex">
-          <span className="font-mono">{ index < 9 ? `0${index + 1}` : index + 1}</span>
-          <i className="icon"><Play /></i>
-        </div>
-      )
-    }
-  },
-  {
-    title: '歌名',
-    dataIndex: 'title',
-    key: 'title',
-    ellipsis: true,
-    className: 'text-zinc-600',
-    sorter: (a, b) => {
-      const reg = /[a-zA-Z]/
-      if (reg.test(a.title) || reg.test(b.title)) {
-        if (a.title > b.title) return 1
-        if (a.title < b.title) return -1
-        return 0
-      }
-      return a.title.localeCompare(b.title)
-    },
-    render: (val, record) => {
-      return (
-        <div>
-          <div className="text-ellipsis text-nowrap overflow-hidden" title={val}>{val}</div>
-          <div className="text-xs text-zinc-400 text-ellipsis text-nowrap overflow-hidden" title={record.artists ? record.artists.map((artist: string) => artist).join(',') : ''}>{record.artists ? record.artists.map((artist: string) => artist).join(',') : ''}</div>
-        </div>
-      )
-    }
-  },
-  {
-    title: '专辑',
-    dataIndex: 'album',
-    key: 'album',
-    ellipsis: true,
-    className: 'text-zinc-400',
-    width: '16%',
-    sorter: (a, b) => {
-      const reg = /[a-zA-Z]/
-      if (reg.test(a.album) || reg.test(b.album)) {
-        if (a.album > b.album) return 1
-        if (a.album < b.album) return -1
-        return 0
-      }
-      return a.album.localeCompare(b.album)
-    }
-  },
-  {
-    title: '时长',
-    dataIndex: 'formatDuration',
-    key: 'formatDuration',
-    ellipsis: true,
-    width: '10%',
-    className: 'text-zinc-400',
-    sorter: (a, b) => a.duration - b.duration
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'ctime',
-    key: 'ctime',
-    ellipsis: true,
-    width: '16%',
-    className: 'text-zinc-400',
-    sorter: (a, b) => dayjs(a.ctime).toDate().getTime() - dayjs(b.ctime).toDate().getTime()
-  },
-  {
-    title: '大小',
-    dataIndex: 'size',
-    key: 'size',
-    ellipsis: true,
-    width: '12%',
-    className: 'text-zinc-400',
-    sorter: (a, b) => a.size.slice(0, -2) - b.size.slice(0, -2)
-  },
-  {
-    width: '10%',
-    className: 'text-zinc-400',
-    render: (val, record) => {
-      return (
-        <Dropdown
-          menu={{
-            items: menuItems,
-            onClick: ({ key }) => {
-              if (key === '2') window.api.showItemInFolder(record.path)
-              else if (key === '3') {
-                Modal.confirm({
-                  title: '确定删除？',
-                  onOk: async () => {
-                    try {
-                      await window.api.trashItem(record.path)
-                      message.success({ content: '删除成功' })
-                    }
-                    catch (err) {
-                      message.error({ content: '删除失败' })
-                      console.error(err)
-                    }
-                  }
-                })
-              }
-            }
-          }}
-          trigger={['click']}
-          placement="topLeft"
-        >
-          <i className="icon"><More size={18} /></i>
-        </Dropdown>
-      )
-    }
-  }
-]
 
 const arrayIsEqual = (a: unknown[], b: unknown[]): boolean => {
   if (!Array.isArray(a) || !Array.isArray(b)) return false
@@ -193,6 +72,7 @@ const arrayIsEqual = (a: unknown[], b: unknown[]): boolean => {
 
 function LocalMusic(): JSX.Element {
   const settingStore = useSettingStore()
+  const { setSource, play, paused } = useMusicPlayStore()
   const {
     localMusicDirectory,
     localMusicDirectorySelected,
@@ -216,6 +96,134 @@ function LocalMusic(): JSX.Element {
     [copyDirectorySelected, localMusicDirectorySelected]
   )
 
+  const setPlay = (url: string) => {
+    setSource(url)
+    play()
+    console.log(paused)
+  }
+
+  const columnData: TableColumnProps[] = [
+    {
+      title: '#',
+      width: '10%',
+      key: 'key',
+      dataIndex: 'key',
+      align: 'center',
+      className: 'text-zinc-400',
+      render: (val, record, index) => {
+        return (
+          <div className="flex">
+            <span className="font-mono">{ index < 9 ? `0${index + 1}` : index + 1}</span>
+            <i className="icon"><Play onClick={() => setPlay(record.path)} /></i>
+          </div>
+        )
+      }
+    },
+    {
+      title: '歌名',
+      dataIndex: 'title',
+      key: 'title',
+      ellipsis: true,
+      className: 'text-zinc-600',
+      sorter: (a, b) => {
+        const reg = /[a-zA-Z]/
+        if (reg.test(a.title) || reg.test(b.title)) {
+          if (a.title > b.title) return 1
+          if (a.title < b.title) return -1
+          return 0
+        }
+        return a.title.localeCompare(b.title)
+      },
+      render: (val, record) => {
+        return (
+          <div>
+            <div className="text-ellipsis text-nowrap overflow-hidden" title={val}>{val}</div>
+            <div className="text-xs text-zinc-400 text-ellipsis text-nowrap overflow-hidden" title={record.artists ? record.artists.map((artist: string) => artist).join(',') : ''}>{record.artists ? record.artists.map((artist: string) => artist).join(',') : ''}</div>
+          </div>
+        )
+      }
+    },
+    {
+      title: '专辑',
+      dataIndex: 'album',
+      key: 'album',
+      ellipsis: true,
+      className: 'text-zinc-400',
+      width: '16%',
+      sorter: (a, b) => {
+        const reg = /[a-zA-Z]/
+        if (reg.test(a.album) || reg.test(b.album)) {
+          if (a.album > b.album) return 1
+          if (a.album < b.album) return -1
+          return 0
+        }
+        return a.album.localeCompare(b.album)
+      }
+    },
+    {
+      title: '时长',
+      dataIndex: 'formatDuration',
+      key: 'formatDuration',
+      ellipsis: true,
+      width: '10%',
+      className: 'text-zinc-400',
+      sorter: (a, b) => a.duration - b.duration
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'ctime',
+      key: 'ctime',
+      ellipsis: true,
+      width: '16%',
+      className: 'text-zinc-400',
+      sorter: (a, b) => dayjs(a.ctime).toDate().getTime() - dayjs(b.ctime).toDate().getTime()
+    },
+    {
+      title: '大小',
+      dataIndex: 'size',
+      key: 'size',
+      ellipsis: true,
+      width: '12%',
+      className: 'text-zinc-400',
+      sorter: (a, b) => a.size.slice(0, -2) - b.size.slice(0, -2)
+    },
+    {
+      width: '10%',
+      className: 'text-zinc-400',
+      render: (val, record) => {
+        return (
+          <Dropdown
+            menu={{
+              items: menuItems,
+              onClick: ({ key }) => {
+                if (key === '2') window.api.showItemInFolder(record.path)
+                else if (key === '3') {
+                  Modal.confirm({
+                    title: '确定删除？',
+                    onOk: async () => {
+                      try {
+                        await window.api.trashItem(record.path)
+                        message.success({ content: '删除成功' })
+                      }
+                      catch (err) {
+                        message.error({ content: '删除失败' })
+                        console.error(err)
+                      }
+                    }
+                  })
+                }
+              }
+            }}
+            trigger={['click']}
+            placement="topLeft"
+          >
+            <i className="icon"><More size={18} /></i>
+          </Dropdown>
+        )
+      }
+    }
+  ]
+
   const rowSelection: TableRowSelection<LocalMusicType> = {
     type: 'checkbox',
     selections: [
@@ -236,28 +244,12 @@ function LocalMusic(): JSX.Element {
       setTableSelection(selectedRowKeys as string[])
     }
   }
-  let audio: HTMLAudioElement | null = null
-  const createAudio = () => {
-    if (audio) return
-    audio = new window.Audio() as HTMLAudioElement
-    audio.controls = false
-    audio.autoplay = true
-    audio.loop = true
-    audio.preload = 'auto'
-    audio.crossOrigin = 'anonymous'
-  }
-  const setSource = (url: string) => {
-    if (!audio) return
-    audio.src = url
-  }
 
   async function getLocalMusic() {
     const initialLocalMusic = await window.api.getLocalMusic(localMusicDirectorySelected)
     setLocalMusic(initialLocalMusic)
     setCopyLocalMusic(initialLocalMusic)
     setIsLoading(false)
-    // createAudio()
-    // setSource(decodeURIComponent(initialLocalMusic[0].path))
   }
 
   useEffect(
