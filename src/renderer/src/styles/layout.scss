@@ -6,7 +6,10 @@
   .layout-header {
     height: $headerHeight;
     line-height: 60px;
-    -webkit-app-region: drag;
+
+    .layout-header-drag {
+      -webkit-app-region: drag;
+    }
 
     .layout-header-icons {
       -webkit-app-region: no-drag;

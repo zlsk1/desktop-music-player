@@ -72,6 +72,7 @@ function LayoutHeader(): JSX.Element {
             <NeteaseCloudMusic className="mr-2" color="#fc3b5b" size={32} />
             <span className="select-none">my-netease-cloud-music</span>
           </div>
+          <div className="layout-header-drag w-64 h-10" />
           <div className="layout-header-icons flex items-center">
             <Link to="/setting">
               <i className="icon"><Setting size={iconSize} /></i>
