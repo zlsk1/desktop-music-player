@@ -10,6 +10,7 @@ const api = {
     if (status) ipcRenderer.send('set-maximize')
     else ipcRenderer.send('un-maximize')
   },
+  quitApp: () => ipcRenderer.send('quit-app'),
   getLocalMusic: (paths: string[]) => ipcRenderer.invoke('get-local-music', paths),
   openDialog: (options?: OpenDialogOptions) => ipcRenderer.invoke('open-dialog', options),
   getUserInfo: () => ipcRenderer.invoke('get-user-info'),

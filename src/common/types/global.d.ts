@@ -29,6 +29,7 @@ declare global {
       hideWindow: () => void,
       blurWindow: () => void,
       setMaximizeStatus: (status: boolean) => void,
+      quitApp: () => void,
       getLocalMusic: (paths: string[]) => Promise<LocalMusic[]>,
       openDialog: (options?: OpenDialogOptions) => Promise<OpenDialogReturnValue>,
       getUserInfo: () => Promise<UserInfo<string>>,

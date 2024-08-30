@@ -18,6 +18,10 @@ export interface Setting {
    */
   exitType: 0 | 1,
   /**
+   * @description 退出应用时是否提示
+   */
+  appearingExitTip: boolean,
+  /**
    * @description 系统级用户的信息
    */
   systemUserInfo: UserInfo<string>

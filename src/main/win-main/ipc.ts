@@ -17,6 +17,7 @@ export const ipcMainWindow = (window: BrowserWindow, app: App) => {
   ipcMain.on('blur-window', () => window.blur())
   ipcMain.on('set-maximize', () => window.maximize())
   ipcMain.on('un-maximize', () => window.unmaximize())
+  ipcMain.on('quit-app', () => app.quit())
   ipcMain.handle('get-maximize-status', () => window.isMaximized())
   ipcMain.handle('get-local-music', async (event: IpcMainInvokeEvent, filepaths: string[]): Promise<LocalMusic[]> => {
     const localMucisPaths = filepaths.map((filepath) => {

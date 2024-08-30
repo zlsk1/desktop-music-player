@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   RiNeteaseCloudMusicFill as NeteaseCloudMusic,
   RiCloseFill as Close,
@@ -7,20 +8,34 @@ import {
   RiSettings4Line as Setting
 } from '@remixicon/react'
 import { Divider, Modal, Checkbox } from 'antd'
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useSettingStore } from '@renderer/store'
+import { produce } from 'immer'
 
 function LayoutHeader(): JSX.Element {
+  const { setting, updateSetting } = useSettingStore()
   const [isMaximized, setMaximize] = useState(false)
   const [isOpen, setOpen] = useState(false)
-  const [isTray, setIsTray] = useState(true)
+  const [isTray, setIsTray] = useState(!setting.exitType)
+  const [appearingTip, setAppearingTip] = useState(setting.appearingExitTip)
 
   const iconSize: number = 18
   const textAlign: React.CSSProperties = { textAlign: 'center' }
 
-  const closeWindow = () => {
+  const handleClose = () => {
+    if (isTray) {
+      window.api.hideWindow()
+    }
+    else window.api.quitApp()
+  }
+
+  const onClose = () => {
+    if (!setting.appearingExitTip) {
+      handleClose()
+      return
+    }
+
     setOpen(true)
-    // window.api.hideWindow()
   }
 
   const blurWindow = () => {
@@ -35,11 +50,18 @@ function LayoutHeader(): JSX.Element {
 
   const handleOk = () => {
     setOpen(false)
-    setTimeout(() => window.api.hideWindow(), 200)
+    updateSetting(produce(setting, (draftState) => {
+      draftState.exitType = isTray ? 0 : 1
+      draftState.appearingExitTip = appearingTip
+    }))
+    setTimeout(() => handleClose(), 200)
   }
 
   const handleCancel = () => {
     setOpen(false)
+    // 未点确定时重置初始值
+    setIsTray(!setting.exitType)
+    setAppearingTip(setting.appearingExitTip)
   }
 
   return (
@@ -61,25 +83,33 @@ function LayoutHeader(): JSX.Element {
                 ? <i className="icon"><FullscreenExit size={iconSize} onClick={() => handleMaximize(false)} /></i>
                 : <i className="icon"><Fullscreen size={iconSize} onClick={() => handleMaximize(true)} /></i>
             }
-            <i className="icon"><Close size={iconSize} onClick={closeWindow} /></i>
+            <i className="icon"><Close size={iconSize} onClick={onClose} /></i>
           </div>
         </div>
       </header>
       <Modal
-        // title="最小化到系统托盘"
         width="34%"
         styles={{ wrapper: { ...textAlign, userSelect: 'none' }, footer: textAlign }}
-        okText="确定"
-        cancelText="取消"
         destroyOnClose
         open={isOpen}
         onOk={handleOk}
         onCancel={handleCancel}
       >
         <div className="mb-2">
-          <Checkbox checked={isTray} onChange={() => setIsTray(!isTray)}>最小化到系统托盘</Checkbox>
+          <Checkbox
+            defaultChecked={setting.exitType === 0}
+            checked={isTray}
+            onChange={() => setIsTray(!isTray)}
+          >
+            最小化到系统托盘
+          </Checkbox>
         </div>
-        <Checkbox>下次不再出现</Checkbox>
+        <Checkbox
+          checked={!appearingTip}
+          onChange={() => setAppearingTip(!appearingTip)}
+        >
+          下次不再出现
+        </Checkbox>
       </Modal>
     </>
   )
