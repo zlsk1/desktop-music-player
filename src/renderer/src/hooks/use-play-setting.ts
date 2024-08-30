@@ -23,7 +23,7 @@ export const defaultPlaySetting: PlaySetting = {
   index: 0,
   volume: 0.5,
   mode: 0,
-  autoplay: true
+  autoplay: false
 }
 
 export const usePlaySetting = () => {
