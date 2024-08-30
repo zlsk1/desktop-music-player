@@ -22,7 +22,7 @@ function setTasks() {
 }
 
 function setTray() {
-  const trayIcon = getNativeImagePath('play-fill.png')
+  const trayIcon = getNativeImagePath('netease-cloud-music-fill.png')
   const tray = new Tray(trayIcon)
 
   const contextMenu = Menu.buildFromTemplate([
@@ -38,7 +38,7 @@ function setTray() {
       click: () => app.quit()
     }
   ])
-  tray.setToolTip('This is my application.')
+  tray.setToolTip('音乐播放器')
   tray.setContextMenu(contextMenu)
   tray.addListener('double-click', () => {
     if (mainWindow) {
