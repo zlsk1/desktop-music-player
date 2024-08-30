@@ -63,6 +63,9 @@ module.exports = {
     'no-console': 0,
     treatUndefinedAsUnspecified: 0,
     'arrow-body-style': [0, 'never'],
-    'no-param-reassign': [0]
+    'no-param-reassign': [0],
+    'no-nested-ternary': [0],
+    'consistent-return': [0],
+    'no-restricted-syntax': [0]
   }
 }

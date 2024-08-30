@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import {
   RiPlayFill as Play,
   RiPauseFill as Pause,
@@ -9,31 +9,76 @@ import {
   RiShuffleLine as Shuffle,
   RiHeartLine as Heart
 } from '@remixicon/react'
+import { Button } from 'antd'
 import { useMusicPlayStore } from '@renderer/store/music-play'
+import { useMusicPlay, usePlaySetting } from '@renderer/hooks'
 
 function Control(): JSX.Element {
-  const { paused, play, pause } = useMusicPlayStore()
-  const currentPause = useMemo(() => paused, [pause])
+  const { audio } = useMusicPlayStore()
+  const {
+    play, pause, prev, next
+  } = useMusicPlay()
+  const { getPlaySetting, setPlaySetting } = usePlaySetting()
+  const [playmode, setPlaymode] = useState(0)
+
+  useEffect(
+    () => {
+      getPlaySetting().then(({ mode }) => setPlaymode(mode))
+    },
+    []
+  )
+
+  const switchPlayMode = () => {
+    if (playmode < 2) {
+      setPlaymode(playmode + 1)
+      setPlaySetting({ mode: playmode + 1 as 0 | 2 | 1 | undefined })
+    }
+    else {
+      setPlaymode(0)
+      setPlaySetting({ mode: 0 })
+    }
+  }
+
+  const currentPlayModeIcon = useMemo(
+    () => {
+      switch (playmode) {
+        case 0:
+          return <i className="control-icon" title="顺序播放"><OrderPlay onClick={switchPlayMode} /></i>
+        case 1:
+          return (
+            <i className="control-icon" title="随机播放">
+              <Shuffle onClick={switchPlayMode} />
+              {' '}
+            </i>
+          )
+        case 2:
+          return (
+            <i className="control-icon" title="单曲循环">
+              <RepeatOne onClick={switchPlayMode} />
+              {' '}
+            </i>
+          )
+        default: <i className="control-icon" title="顺序播放"><OrderPlay onClick={switchPlayMode} /></i>
+      }
+    },
+    [playmode]
+  )
 
   return (
     <div className="flex items-center justify-center">
       <i className="control-icon" title="喜欢"><Heart /></i>
-      <i className="control-icon prev" title="上一首"><Previous /></i>
+      <i className="control-icon prev" title="上一首"><Previous onClick={prev} /></i>
       {
-        paused
+        !audio || audio?.paused
           ? (
-            <i className="control-icon flex items-center justify-center w-9 h-9 bg-sky-500 rounded-full" title="播放">
-              <Play className="text-white" onClick={play} />
-            </i>
+            <Button title="播放" className="mx-1" type="primary" shape="circle" icon={<Play className="text-white" />} onClick={play} />
           )
           : (
-            <i className="control-icon flex items-center justify-center w-9 h-9 bg-sky-500 rounded-full" title="播放">
-              <Pause className="text-white" onClick={pause} />
-            </i>
+            <Button title="播放" className="mx-1" type="primary" shape="circle" icon={<Pause className="text-white" />} onClick={pause} />
           )
       }
-      <i className="control-icon next" title="下一首"><Next /></i>
-      <i className="control-icon" title="顺序播放"><OrderPlay /></i>
+      <i className="control-icon next" title="下一首"><Next onClick={next} /></i>
+      {currentPlayModeIcon}
     </div>
   )
 }

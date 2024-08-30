@@ -15,6 +15,7 @@ interface LocalMusic {
   key?: string,
   formatDuration?: string,
   duration?: number,
+  img?: string
 }
 
 declare class FileSystemDirectoryHandle extends window.FileSystemHandle {

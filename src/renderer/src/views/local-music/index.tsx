@@ -12,13 +12,16 @@ import {
   RiMoreLine as More,
   RiLoaderLine as Load,
   RiDeleteBin4Line as Detele,
-  RiAddBoxFill as AddBox,
+  RiPlayListAddFill as PlayListAdd,
+  RiCornerDownLeftLine as Insert,
   RiFile3Fill as File,
   RiSearchLine as Search,
   RiPlayListAddLine as PlayList,
   RiCheckDoubleLine as CheckDouble
 } from '@remixicon/react'
 import { useSettingStore, useMusicPlayStore } from '@renderer/store'
+import { useMusicPlay } from '@renderer/hooks'
+import type { SongInfo } from '@renderer/store'
 import { escapePath } from '@renderer/utils'
 import './index.scss'
 import type {
@@ -39,26 +42,26 @@ const menuItems: MenuProps['items'] = [
   },
   {
     key: '1',
+    label: '插入到下一首',
+    icon: <Insert size={20} color="#686f7e" />
+  },
+  {
+    key: '2',
     label: '添加到播放列表',
-    icon: <AddBox size={20} color="#686f7e" />
+    icon: <PlayListAdd size={20} color="#686f7e" />
   },
   {
     type: 'divider'
   },
   {
-    key: '2',
+    key: '3',
     label: '打开文件所在目录',
     icon: (
       <File size={20} color="#686f7e" />
     )
   },
-  // {
-  //   key: '4',
-  //   label: '从列表中删除',
-  //   icon: <Detele size={20} color="#686f7e" />
-  // },
   {
-    key: '3',
+    key: '4',
     label: '从磁盘中删除',
     icon: <Detele size={20} color="#686f7e" />
   }
@@ -71,8 +74,11 @@ const arrayIsEqual = (a: unknown[], b: unknown[]): boolean => {
 }
 
 function LocalMusic(): JSX.Element {
+  const { play } = useMusicPlay()
   const settingStore = useSettingStore()
-  const { setSource, play, paused } = useMusicPlayStore()
+  const {
+    setSource, setSongQueue, setMultipleSources, insertAtNext
+  } = useMusicPlayStore()
   const {
     localMusicDirectory,
     localMusicDirectorySelected,
@@ -96,10 +102,9 @@ function LocalMusic(): JSX.Element {
     [copyDirectorySelected, localMusicDirectorySelected]
   )
 
-  const setPlay = (url: string) => {
-    setSource(url)
+  const setPlay = (data: SongInfo) => {
+    setSource(data)
     play()
-    console.log(paused)
   }
 
   const columnData: TableColumnProps[] = [
@@ -114,7 +119,16 @@ function LocalMusic(): JSX.Element {
         return (
           <div className="flex">
             <span className="font-mono">{ index < 9 ? `0${index + 1}` : index + 1}</span>
-            <i className="icon"><Play onClick={() => setPlay(record.path)} /></i>
+            <i className="icon">
+              <Play onClick={() => setPlay({
+                name: record.title,
+                url: record.path,
+                artist: record.artist,
+                artists: record.artists,
+                img: record.img
+              })}
+              />
+            </i>
           </div>
         )
       }
@@ -196,8 +210,35 @@ function LocalMusic(): JSX.Element {
             menu={{
               items: menuItems,
               onClick: ({ key }) => {
-                if (key === '2') window.api.showItemInFolder(record.path)
-                else if (key === '3') {
+                if (key === '0') {
+                  setPlay({
+                    name: record.title,
+                    url: record.path,
+                    artist: record.artist,
+                    artists: record.artists,
+                    img: record.img
+                  })
+                }
+                else if (key === '1') {
+                  insertAtNext({
+                    name: record.title,
+                    url: record.path,
+                    artist: record.artist,
+                    artists: record.artists,
+                    img: record.img
+                  })
+                }
+                else if (key === '2') {
+                  setSongQueue({
+                    name: record.title,
+                    url: record.path,
+                    artist: record.artist,
+                    artists: record.artists,
+                    img: record.img
+                  })
+                }
+                else if (key === '3') window.api.showItemInFolder(record.path)
+                else if (key === '4') {
                   Modal.confirm({
                     title: '确定删除？',
                     onOk: async () => {
@@ -352,6 +393,19 @@ function LocalMusic(): JSX.Element {
     })
   }
 
+  const playAll = () => {
+    const list = localMusic.map((music) => {
+      return {
+        name: music.title,
+        url: music.path,
+        artist: music.artist,
+        artists: music.artists,
+        img: music.img
+      } as SongInfo
+    })
+    setMultipleSources(list)
+  }
+
   return (
     <>
       <div className="p-4">
@@ -385,7 +439,7 @@ function LocalMusic(): JSX.Element {
                 </div>
                 <div className="flex justify-between mb-2">
                   <div>
-                    <Button type="primary" icon={<Play size={18} />} className="mr-2">播放全部</Button>
+                    <Button type="primary" icon={<Play size={18} />} className="mr-2" onClick={playAll}>播放全部</Button>
                     <Tooltip title="刷新">
                       <Button icon={<Load size={18} />} className="mr-2" onClick={reload} />
                     </Tooltip>

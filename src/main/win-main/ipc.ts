@@ -33,7 +33,7 @@ export const ipcMainWindow = (window: BrowserWindow, app: App) => {
       const status = await fs.promises.stat(flatPath)
       const metadata = await getMusicMetadata(flatPath)
       const {
-        title, artist, artists, album, formatDuration, duration
+        title, artist, artists, album, formatDuration, duration, img
       } = getMusicInfo(metadata)
 
       return {
@@ -46,6 +46,7 @@ export const ipcMainWindow = (window: BrowserWindow, app: App) => {
         artist,
         artists,
         album,
+        img,
         formatDuration,
         duration
       }
