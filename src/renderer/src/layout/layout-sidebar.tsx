@@ -45,7 +45,7 @@ function LayoutSidebar(): JSX.Element {
   return (
     <div className="layout-sidebar w-1/5 p-4 bg-gray-100">
       <Menu
-        defaultSelectedKeys={['sub1']}
+        defaultSelectedKeys={['user-like']}
         items={items}
         expandIcon={null}
         mode="inline"
