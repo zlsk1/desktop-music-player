@@ -1,18 +1,14 @@
-appId: com.electron.app
-productName: my-app
-directories:
-  buildResources: build
+appId: zlsk.12321
+productName: desktop-music-player
 files:
   - '!**/.vscode/*'
-  - '!src/*'
-  - '!electron.vite.config.{js,ts,mjs,cjs}'
-  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
+  - '!electron.vite.config.ts'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.json,README.md,tailwind.config.ts,.gitignore,.editorconfig}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
-  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
-  - resources/**
+  - publish/**
 win:
-  executableName: my-app
+  executableName: desktop-music-player
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
