@@ -2,11 +2,11 @@
   font-size: 12px;
 }
 
-:where(.css-dev-only-do-not-override-3rgfp1).ant-table-wrapper .ant-table-thead >tr>th {
+.ant-table-wrapper .ant-table-thead >tr>th {
   background: none;
   font-weight: normal;
 }
 
-:where(.css-dev-only-do-not-override-3rgfp1).ant-table-wrapper .ant-table-tbody >tr >td {
+.ant-table-wrapper .ant-table-tbody >tr >td {
   border-bottom: none;
 }
