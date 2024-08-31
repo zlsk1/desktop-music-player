@@ -136,7 +136,7 @@ function LocalMusic(): JSX.Element {
     {
       title: '歌名',
       dataIndex: 'title',
-      key: 'title',
+      key: 'key',
       ellipsis: true,
       className: 'text-zinc-600',
       sorter: (a, b) => {
@@ -152,7 +152,18 @@ function LocalMusic(): JSX.Element {
         return (
           <div>
             <div className="text-ellipsis text-nowrap overflow-hidden" title={val}>{val}</div>
-            <div className="text-xs text-zinc-400 text-ellipsis text-nowrap overflow-hidden" title={record.artists ? record.artists.map((artist: string) => artist).join(',') : ''}>{record.artists ? record.artists.map((artist: string) => artist).join(',') : ''}</div>
+            {
+              record.artists
+                ? (
+                  <div
+                    className="text-xs text-zinc-400 text-ellipsis text-nowrap overflow-hidden"
+                    title={record.artists ? record.artists.map((artist: string) => artist).join(',') : ''}
+                  >
+                    {record.artists ? record.artists.map((artist: string) => artist).join(',') : ''}
+                  </div>
+                )
+                : ''
+            }
           </div>
         )
       }
@@ -160,7 +171,7 @@ function LocalMusic(): JSX.Element {
     {
       title: '专辑',
       dataIndex: 'album',
-      key: 'album',
+      key: 'key',
       ellipsis: true,
       className: 'text-zinc-400',
       width: '16%',
@@ -177,7 +188,7 @@ function LocalMusic(): JSX.Element {
     {
       title: '时长',
       dataIndex: 'formatDuration',
-      key: 'formatDuration',
+      key: 'key',
       ellipsis: true,
       width: '10%',
       className: 'text-zinc-400',
@@ -186,7 +197,7 @@ function LocalMusic(): JSX.Element {
     {
       title: '创建时间',
       dataIndex: 'ctime',
-      key: 'ctime',
+      key: 'key',
       ellipsis: true,
       width: '16%',
       className: 'text-zinc-400',
@@ -195,7 +206,7 @@ function LocalMusic(): JSX.Element {
     {
       title: '大小',
       dataIndex: 'size',
-      key: 'size',
+      key: 'key',
       ellipsis: true,
       width: '12%',
       className: 'text-zinc-400',
@@ -203,6 +214,7 @@ function LocalMusic(): JSX.Element {
     },
     {
       width: '10%',
+      key: 'key',
       className: 'text-zinc-400',
       render: (val, record) => {
         return (

@@ -4,7 +4,7 @@ import {
   RiHistoryFill as History,
   RiMusicFill as Music
 } from '@remixicon/react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import type { MenuProps } from 'antd'
 
 function LayoutSidebar(): JSX.Element {
@@ -12,6 +12,7 @@ function LayoutSidebar(): JSX.Element {
   type OnSelect = Required<MenuProps>['onSelect']
 
   const navigate = useNavigate()
+  const location = useLocation()
 
   const items: MenuItem[] = [
     {
@@ -20,17 +21,17 @@ function LayoutSidebar(): JSX.Element {
       type: 'group',
       children: [
         {
-          key: 'user-like',
+          key: '/user-like',
           label: '我喜欢',
           icon: <Heart size={22} />
         },
         {
-          key: 'play-history',
+          key: '/play-history',
           label: '播放历史',
           icon: <History size={22} />
         },
         {
-          key: 'local-music',
+          key: '/local-music',
           label: '本地音乐',
           icon: <Music size={22} />
         }
@@ -39,13 +40,13 @@ function LayoutSidebar(): JSX.Element {
   ]
 
   const onSelect: OnSelect = ({ key }) => {
-    navigate(`/${key}`)
+    navigate(key)
   }
 
   return (
     <div className="layout-sidebar w-1/5 p-4 bg-gray-100">
       <Menu
-        defaultSelectedKeys={['user-like']}
+        defaultSelectedKeys={[location.pathname]}
         items={items}
         expandIcon={null}
         mode="inline"
