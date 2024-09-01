@@ -1,24 +1,17 @@
-import { ipcMain, dialog, shell } from 'electron'
+import { ipcMain } from 'electron'
 import fg from 'fast-glob'
 import fs from 'fs'
-import os from 'os'
 import dayjs from 'dayjs'
 import type {
-  BrowserWindow, IpcMainInvokeEvent, OpenDialogOptions, App
+  BrowserWindow, IpcMainInvokeEvent, App
 } from 'electron'
-import type { LocalMusic } from '../../common/types/global'
+import { store } from '../../store/instance'
 import {
   getSongNameFromPath, formatBytes, getMusicMetadata, getMusicInfo
-} from '../../common/utils'
-import { normalizePath } from '../utils'
+} from '../../../common/utils'
+import type { LocalMusic } from '../../../common/types/global.d.ts'
 
-export const ipcMainWindow = (window: BrowserWindow, app: App) => {
-  ipcMain.on('hide-window', () => window.hide())
-  ipcMain.on('blur-window', () => window.blur())
-  ipcMain.on('set-maximize', () => window.maximize())
-  ipcMain.on('un-maximize', () => window.unmaximize())
-  ipcMain.on('quit-app', () => app.quit())
-  ipcMain.handle('get-maximize-status', () => window.isMaximized())
+export const fileEvents = (window: BrowserWindow, app: App) => {
   ipcMain.handle('get-local-music', async (event: IpcMainInvokeEvent, filepaths: string[]): Promise<LocalMusic[]> => {
     const localMucisPaths = filepaths.map((filepath) => {
       return fg.sync('**/*.{mp3, mp4, webm, ogg}', {
@@ -51,20 +44,10 @@ export const ipcMainWindow = (window: BrowserWindow, app: App) => {
         formatDuration,
         duration
       }
-    })
+    }) as Promise<LocalMusic>[]
 
     const result = await Promise.all(tasks)
 
-    return result
-  })
-  ipcMain.handle('open-dialog', async (event: IpcMainInvokeEvent, options?: OpenDialogOptions) => {
-    const res = await dialog.showOpenDialog({ ...options })
-    return res
-  })
-  ipcMain.handle('get-user-info', () => os.userInfo())
-  ipcMain.on('show-item-in-folder', (event: IpcMainInvokeEvent, fullPath: string) => shell.showItemInFolder(normalizePath(fullPath)))
-  ipcMain.handle('trash-item', async (event: IpcMainInvokeEvent, path: string) => {
-    const result = await shell.trashItem(normalizePath(path))
     return result
   })
   ipcMain.handle('get-local-music-path', (event: IpcMainInvokeEvent, path: any) => app.getPath(path))

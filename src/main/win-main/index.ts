@@ -5,7 +5,7 @@ import path from 'path'
 import { is } from '@electron-toolkit/utils'
 import type { BrowserWindow as BrowserWindowType, App } from 'electron'
 import { getNativeImagePath } from '../utils'
-import { ipcMainWindow } from './ipc'
+import { mainWindowEvents } from './events'
 
 let mainWindow: BrowserWindowType | null = null
 
@@ -66,7 +66,7 @@ export function createMainWindow(app: App): BrowserWindowType {
   })
 
   watchMainWindow()
-  ipcMainWindow(mainWindow, app)
+  mainWindowEvents(mainWindow, app)
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
