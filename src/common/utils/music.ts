@@ -12,15 +12,17 @@ interface MusicInfo {
 }
 
 export const getMusicMetadata = async (path: string): Promise<IAudioMetadata | undefined> => {
-  const { parseFile } = await import('music-metadata')
-  let metadata
-  try {
-    metadata = await parseFile(path)
-  }
-  catch {
-    console.warn('cannot resolve metadata for the path')
-  }
-  return metadata
+  return import('music-metadata').then(({ parseFile }) => {
+    return new Promise<IAudioMetadata | undefined>((reslove, reject) => {
+      try {
+        parseFile(path).then((res) => reslove(res))
+      }
+      catch (err) {
+        console.warn('cannot resolve metadata for the path')
+        reject(err)
+      }
+    })
+  })
 }
 
 export const getMusicInfo = (metadata?: IAudioMetadata): MusicInfo => {

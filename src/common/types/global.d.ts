@@ -1,6 +1,6 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 import type { IAudioMetadata  } from 'music-metadata'
-import type { OpenDialogReturnValue, OpenDialogOptions, OpenExternalOptions } from 'electron'
+import type { OpenDialogReturnValue, OpenDialogOptions } from 'electron'
 import type { UserInfo } from 'node:os'
 
 interface LocalMusic {
@@ -12,7 +12,7 @@ interface LocalMusic {
   artists?: string[],
   album?: string,
   metadata?: IAudioMetadata,
-  key?: string,
+  key?: number,
   formatDuration?: string,
   duration?: number,
   img?: string

@@ -1,55 +1,70 @@
 import { ipcMain } from 'electron'
 import fg from 'fast-glob'
-import fs from 'fs'
 import dayjs from 'dayjs'
 import type {
   BrowserWindow, IpcMainInvokeEvent, App
 } from 'electron'
-import { store } from '../../store/instance'
+import type { Entry } from 'fast-glob'
 import {
   getSongNameFromPath, formatBytes, getMusicMetadata, getMusicInfo
 } from '../../../common/utils'
-import type { LocalMusic } from '../../../common/types/global.d.ts'
+import type { LocalMusic } from '../../../common/types/global'
 
-export const fileEvents = (window: BrowserWindow, app: App) => {
-  ipcMain.handle('get-local-music', async (event: IpcMainInvokeEvent, filepaths: string[]): Promise<LocalMusic[]> => {
-    const localMucisPaths = filepaths.map((filepath) => {
-      return fg.sync('**/*.{mp3, mp4, webm, ogg}', {
+const getLocalMusic = (
+  event: IpcMainInvokeEvent,
+  filepaths: string[]
+): Promise<LocalMusic[]> => {
+  return new Promise((resolve, reject) => {
+    const globs = filepaths.map((filepath) => {
+      return fg('**/*.{mp3, webm, ogg}', {
         cwd: filepath,
         absolute: true,
-        onlyFiles: true
+        onlyFiles: true,
+        deep: 1,
+        stats: true
       })
     })
 
-    const flatPaths = localMucisPaths.flat()
+    Promise.all(globs)
+      .then((globPaths) => {
+        const localPaths: Omit<Entry, 'dirent'>[] = globPaths.flat().map((item) => ({
+          name: item.name,
+          path: item.path,
+          stats: item.stats
+        }))
 
-    const tasks = flatPaths.map(async (flatPath) => {
-      const status = await fs.promises.stat(flatPath)
-      const metadata = await getMusicMetadata(flatPath)
-      const {
-        title, artist, artists, album, formatDuration, duration, img
-      } = getMusicInfo(metadata)
+        const tasks = localPaths.map((localPath) => {
+          return getMusicMetadata(localPath.path).then((metadata) => {
+            const {
+              title, artist, artists, album, formatDuration, duration, img
+            } = getMusicInfo(metadata)
 
-      return {
-        title: title || getSongNameFromPath(flatPath),
-        size: formatBytes(status.size),
-        ctime: dayjs(status.birthtime).format('YYYY-MM-DD'),
-        path: decodeURIComponent(flatPath),
-        key: decodeURIComponent(flatPath),
-        metadata,
-        artist,
-        artists,
-        album,
-        img,
-        formatDuration,
-        duration
-      }
-    }) as Promise<LocalMusic>[]
+            return {
+              title: title || getSongNameFromPath(localPath.path),
+              size: formatBytes(localPath.stats?.size || 0),
+              ctime: dayjs(localPath.stats?.birthtime).format('YYYY-MM-DD'),
+              path: decodeURIComponent(localPath.path),
+              key: localPath.stats?.ino,
+              metadata,
+              artist,
+              artists,
+              album,
+              img,
+              formatDuration,
+              duration
+            }
+          })
+        }) as Promise<LocalMusic>[]
 
-    const result = await Promise.all(tasks)
-
-    return result
+        Promise.all(tasks)
+          .then((taskResult) => resolve(taskResult))
+          .catch((err) => reject(err))
+      })
   })
+}
+
+export const fileEvents = (window: BrowserWindow, app: App) => {
+  ipcMain.handle('get-local-music', getLocalMusic)
   ipcMain.handle('get-local-music-path', (event: IpcMainInvokeEvent, path: any) => app.getPath(path))
   ipcMain.handle('get-local-download-path', (event: IpcMainInvokeEvent, path: any) => app.getPath(path))
 }
