@@ -59,7 +59,7 @@ module.exports = {
       SwitchCase: 1,
       VariableDeclarator: 'first'
     }],
-    'no-unused-vars': 1,
+    'no-unused-vars': 0,
     'no-console': 0,
     treatUndefinedAsUnspecified: 0,
     'arrow-body-style': [0, 'never'],

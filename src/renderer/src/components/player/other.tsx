@@ -5,10 +5,11 @@ import {
   RiMenuUnfold4Line as Menu,
   RiRhythmFill as Rhythm
 } from '@remixicon/react'
-import { Popover, Slider, Drawer } from 'antd'
+import { Popover, Slider } from 'antd'
 import type { GetRef } from 'antd'
 import { usePlaySetting } from '@renderer/hooks'
 import { useMusicPlayStore } from '@renderer/store'
+import AsideQueue from './aside-queue'
 
 type SliderRef = GetRef<typeof Slider>
 
@@ -90,7 +91,7 @@ function Other(): JSX.Element {
         </i>
       </Popover>
       <i className="icon"><Menu size={iconSize} onClick={() => setIsOpenDrawer(true)} /></i>
-      <Drawer open={isOpenDrawer} title="歌曲列表" width="30%" onClose={() => setIsOpenDrawer(false)} />
+      <AsideQueue visible={isOpenDrawer} setVisible={setIsOpenDrawer} />
     </div>
   )
 }
