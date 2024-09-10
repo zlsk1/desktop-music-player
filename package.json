@@ -7,6 +7,8 @@
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
+    "tw": "npx tailwind -i src/renderer/src/styles/tailwind.css -o src/renderer/src/styles/base.css",
+    "tw:watch": "npx tailwind -i src/renderer/src/styles/tailwind.css -o src/renderer/src/styles/base.css --watch",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json --composite false",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
@@ -23,6 +25,7 @@
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "@remixicon/react": "^4.2.0",
+    "colorthief": "^2.4.0",
     "dayjs": "^1.11.13",
     "fast-glob": "^3.3.2",
     "immer": "^10.1.1",
