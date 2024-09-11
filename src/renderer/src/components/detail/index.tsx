@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react'
 import { Drawer } from 'antd'
 import { RiArrowDownWideLine as ArrowDown } from '@remixicon/react'
+import { useAudioVisualization } from '@renderer/hooks/use-audio-visualization'
+import { useMusicPlayStore } from '@renderer/store'
 
 type Props = {
   visible: boolean,
@@ -10,6 +13,17 @@ type Props = {
 function Detail({
   visible, linearBg, setVisible
 }: Props): JSX.Element {
+  const [isInit, setIsInit] = useState(false)
+  const { audio } = useMusicPlayStore()
+
+  useEffect(() => {
+    if (audio && !audio.paused && visible && !isInit) {
+      const { draw } = useAudioVisualization(audio, 512)
+      draw()
+      setIsInit(true)
+    }
+  }, [audio, audio?.paused, visible, isInit])
+
   return (
     <Drawer
       open={visible}
@@ -28,7 +42,9 @@ function Detail({
         }
       }}
       onClose={() => setVisible(false)}
-    />
+    >
+      <canvas id="canvas" />
+    </Drawer>
   )
 }
 
