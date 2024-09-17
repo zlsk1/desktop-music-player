@@ -126,7 +126,7 @@ function Setting(): JSX.Element {
         theme={{
           components: {
             Tabs: {
-              verticalItemPadding: '8px 16px'
+              verticalItemPadding: '2px 16px'
             }
           }
         }}

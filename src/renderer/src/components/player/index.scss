@@ -1,0 +1,17 @@
+@use '../../styles/variables.scss' as *;
+
+.player {
+  position: sticky;
+  bottom: 0;
+  right: 0;
+  height: $playerHeight;
+  background-color: #fff;
+}
+
+.next, .prev {
+  color: #666;
+
+  &:hover {
+    color: #333;
+  }
+}

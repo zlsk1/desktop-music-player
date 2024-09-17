@@ -57,7 +57,7 @@ export const useMusicPlayStoreBase = create<MusicPlay>((set, get) => {
     currentIndex: 0,
     currentPercent: 0,
     changing: false,
-    createAudio: (audio) => { set({ audio }) },
+    createAudio: (audio) => set({ audio }),
     setSource: (source: SongInfo) => {
       const { audio, songQueue } = get()
       if (!audio) return
@@ -97,7 +97,10 @@ export const useMusicPlayStoreBase = create<MusicPlay>((set, get) => {
         currentIndex
       })
     },
-    setIndex: (currentIndex: number) => set({ currentIndex }),
+    setIndex: (currentIndex: number) => {
+      set({ currentIndex })
+      setPlaySetting({ index: currentIndex })
+    },
     setCurrentPercent: (currentPercent: number) => set({ currentPercent }),
     setChanging: (changing: boolean) => set({ changing }),
     setSongQueue

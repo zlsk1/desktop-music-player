@@ -12,6 +12,7 @@ import {
 import { Button } from 'antd'
 import { useMusicPlayStore } from '@renderer/store/music-play'
 import { useMusicPlay, usePlaySetting } from '@renderer/hooks'
+import '../index.scss'
 
 function Control(): JSX.Element {
   const { audio } = useMusicPlayStore()
@@ -43,22 +44,22 @@ function Control(): JSX.Element {
     () => {
       switch (playmode) {
         case 0:
-          return <i className="control-icon" title="顺序播放"><OrderPlay onClick={switchPlayMode} /></i>
+          return <i className="icon" title="顺序播放"><OrderPlay onClick={switchPlayMode} /></i>
         case 1:
           return (
-            <i className="control-icon" title="随机播放">
+            <i className="icon" title="随机播放">
               <Shuffle onClick={switchPlayMode} />
               {' '}
             </i>
           )
         case 2:
           return (
-            <i className="control-icon" title="单曲循环">
+            <i className="icon" title="单曲循环">
               <RepeatOne onClick={switchPlayMode} />
               {' '}
             </i>
           )
-        default: <i className="control-icon" title="顺序播放"><OrderPlay onClick={switchPlayMode} /></i>
+        default: <i className="icon" title="顺序播放"><OrderPlay onClick={switchPlayMode} /></i>
       }
     },
     [playmode]
@@ -66,18 +67,18 @@ function Control(): JSX.Element {
 
   return (
     <div className="flex items-center justify-center">
-      <i className="control-icon" title="喜欢"><Heart /></i>
-      <i className="control-icon prev" title="上一首"><Previous onClick={prev} /></i>
+      <i className="icon" title="喜欢"><Heart /></i>
+      <i className="icon prev" title="上一首"><Previous onClick={prev} /></i>
       {
         !audio || audio?.paused
           ? (
             <Button title="播放" className="mx-1" type="primary" shape="circle" icon={<Play className="text-white" />} onClick={play} />
           )
           : (
-            <Button title="播放" className="mx-1" type="primary" shape="circle" icon={<Pause className="text-white" />} onClick={pause} />
+            <Button title="暂停" className="mx-1" type="primary" shape="circle" icon={<Pause className="text-white" />} onClick={pause} />
           )
       }
-      <i className="control-icon next" title="下一首"><Next onClick={next} /></i>
+      <i className="icon next" title="下一首"><Next onClick={next} /></i>
       {currentPlayModeIcon}
     </div>
   )

@@ -9,6 +9,7 @@ import {
 import { useMusicPlay } from '@renderer/hooks'
 import { useMusicPlayStore } from '@renderer/store'
 import type { SongInfo } from '@renderer/store'
+import DefaultSongImg from '../default-song-img'
 
 type props = {
   visible: boolean,
@@ -75,7 +76,7 @@ function AsideQueue({ visible, setVisible }: props): JSX.Element {
               <li
                 key={v.url}
                 className={
-                  `flex items-center my-2 p-2 transition-all duration-300 hover:rounded hover:shadow-md hover:bg-slate-100 ${v.url === currentSong.url ? 'bg-slate-100 rounded shadow-md' : ''}`
+                  `flex items-center my-2 p-2 transition-all duration-300 hover:rounded hover:shadow-md hover:bg-slate-100 ${v.url === currentSong?.url ? 'bg-slate-100 rounded shadow-md' : ''}`
                 }
                 onMouseEnter={() => onMouseEnter(i)}
                 onMouseLeave={() => onMouseLeave(i)}
@@ -85,52 +86,64 @@ function AsideQueue({ visible, setVisible }: props): JSX.Element {
                     ? (
                       <div
                         style={{ background: `url(data:image/png;base64,${v.img}) center/100% no-repeat` }}
-                        className="flex items-center justify-center shrink-0 w-10 h-10 mr-2 rounded"
+                        className="relative w-10 h-10 mr-2 rounded"
                       >
-                        {
-                          v.url === currentSong.url && !audio?.paused
-                            ? (
-                              <Pause
-                                style={{ display: v.hovering ? 'block' : 'none' }}
-                                size={18}
-                                className="cursor-pointer text-gray-300 transition-colors duration-300 hover:text-gray-100 shadow"
-                                onClick={pause}
-                              />
-                            )
-                            : (
-                              <Play
-                                style={{ display: v.hovering ? 'block' : 'none' }}
-                                size={18}
-                                className="cursor-pointer text-gray-300 transition-colors duration-300 hover:text-gray-100 shadow"
-                                onClick={() => handlePlay(i)}
-                              />
-                            )
-                        }
+                        <div className={`${v.hovering ? 'opacity-100' : 'opacity-0'} transition-opacity`}>
+                          <div className="absolute inset-0 bg-gray-800 opacity-30" />
+                          {
+                            v.url === currentSong?.url && !audio?.paused
+                              ? (
+                                <Pause
+                                  style={{ display: v.hovering ? 'block' : 'none' }}
+                                  size={18}
+                                  className="absolute top-1/2 left-1/2 text-gray-300 -translate-x-1/2 -translate-y-1/2 transition-colors duration-300 cursor-pointer hover:text-gray-100 shadow"
+                                  onClick={pause}
+                                />
+                              )
+                              : (
+                                <Play
+                                  style={{ display: v.hovering ? 'block' : 'none' }}
+                                  size={18}
+                                  className="absolute top-1/2 left-1/2 text-gray-300 -translate-x-1/2 -translate-y-1/2 transition-colors duration-300 cursor-pointer hover:text-gray-100 shadow"
+                                  onClick={() => handlePlay(i)}
+                                />
+                              )
+                          }
+                        </div>
                       </div>
                     )
                     : (
-                      <div className="flex items-center justify-center shrink-0 w-10 h-10 mr-2 bg-slate-500 rounded">
-                        {
-                          v.url === currentSong.url && !audio?.paused
-                            ? (
-                              <Pause
-                                style={{ display: v.hovering ? 'block' : 'none' }}
-                                size={18}
-                                className="cursor-pointer text-gray-300 transition-colors duration-300 hover:text-gray-100 shadow"
-                                onClick={pause}
-                              />
-                            )
-                            : (
-                              <Play
-                                style={{ display: v.hovering ? 'block' : 'none' }}
-                                size={18}
-                                className="cursor-pointer text-gray-300 transition-colors duration-300 hover:text-gray-100 shadow"
-                                onClick={() => handlePlay(i)}
-                              />
-                            )
-                        }
-                      </div>
+                      <DefaultSongImg
+                        content={(
+                          <div className={`${v.hovering ? 'opacity-100' : 'opacity-0'} transition-opacity`}>
+                            <div className="absolute inset-0 bg-gray-800 opacity-30" />
+                            {
+                              v.url === currentSong?.url && !audio?.paused
+                                ? (
+                                  <Pause
+                                    style={{ display: v.hovering ? 'block' : 'none' }}
+                                    size={18}
+                                    className="absolute top-1/2 left-1/2 text-gray-300 -translate-x-1/2 -translate-y-1/2 transition-colors duration-300 cursor-pointer hover:text-gray-100"
+                                    onClick={pause}
+                                  />
+                                )
+                                : (
+                                  <Play
+                                    style={{ display: v.hovering ? 'block' : 'none' }}
+                                    size={18}
+                                    className="absolute top-1/2 left-1/2 text-gray-300 -translate-x-1/2 -translate-y-1/2  transition-colors duration-300 cursor-pointer hover:text-gray-100"
+                                    onClick={() => handlePlay(i)}
+                                  />
+                                )
+                            }
+
+                          </div>
+                        )}
+                        size={40}
+                        className="rounded"
+                      />
                     )
+
                 }
                 <div className="flex-1 w-10 text-xs">
                   <div>{v.name}</div>

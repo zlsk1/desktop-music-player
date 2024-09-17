@@ -4,14 +4,16 @@ import { useMusicPlayStore } from '@renderer/store'
 import Info from './info'
 import Bar from './bar'
 import Other from './other'
-import '@renderer/styles/player.scss'
+import './index.scss'
 
 function Player(): JSX.Element {
   const {
     audio, changing, createAudio, init
   } = useMusicPlayStore()
-  const { currentSong, ended, timeupdate } = useMusicPlay()
-  const { getPlaySetting } = usePlaySetting()
+  const {
+    currentSong, ended, timeupdate, loadedmetadata
+  } = useMusicPlay()
+  const { getPlaySetting, setPlaySetting } = usePlaySetting()
 
   useEffect(
     () => {
@@ -54,10 +56,10 @@ function Player(): JSX.Element {
   )
 
   return (
-    <div className="player flex items-center justify-between w-full shadow shadow-gray-300">
-      <Info />
+    <div className="player flex items-center w-full px-6 shadow shadow-gray-300">
+      <Info className="flex-1" />
       <Bar />
-      <Other />
+      <Other className="flex-1" />
     </div>
   )
 }

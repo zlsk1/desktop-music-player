@@ -9,11 +9,15 @@ import { Popover, Slider } from 'antd'
 import type { GetRef } from 'antd'
 import { usePlaySetting } from '@renderer/hooks'
 import { useMusicPlayStore } from '@renderer/store'
-import AsideQueue from './aside-queue'
+import AsideQueue from '../aside-queue'
 
 type SliderRef = GetRef<typeof Slider>
 
-function Other(): JSX.Element {
+type Props = {
+  className?: string
+}
+
+function Other({ className = '' }: Props): JSX.Element {
   const [audioVolume, setVolume] = useState(0)
   const [volumeMute, setVolumeMute] = useState(false)
   const [isOpenDrawer, setIsOpenDrawer] = useState(false)
@@ -79,7 +83,7 @@ function Other(): JSX.Element {
   )
 
   return (
-    <div className="flex justify-end flex-1 px-4">
+    <div className={`${className} flex justify-end`}>
       <i className="icon"><Rhythm size={iconSize} /></i>
       <Popover content={volumeBar} overlayInnerStyle={{ padding: '10px 5px' }}>
         <i className="icon">

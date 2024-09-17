@@ -1,42 +1,75 @@
-export const useAudioVisualization = (audio: HTMLAudioElement, fftSize: number) => {
-  const audioCtx = new window.AudioContext()
-  const analyser = audioCtx.createAnalyser()
-  const source = audioCtx.createMediaElementSource(audio)
+const defaultOptions = {
+  fftSize: 512,
+  lineHeight: 64,
+  width: document.body.getBoundingClientRect().width! * 0.9,
+  bg: '#1677ff'
+}
 
-  source?.connect(analyser)
-  analyser.connect(audioCtx.destination)
+const audioCtx = new window.AudioContext()
+const analyser = audioCtx.createAnalyser()
+let source: MediaElementAudioSourceNode
+let isInit = false
 
-  analyser.fftSize = fftSize
-  const bufferLength = analyser.frequencyBinCount
+export const useAudioVisualization = (
+  audio: HTMLAudioElement | null,
+  canvas: HTMLCanvasElement | null,
+  options: Partial<typeof defaultOptions> = defaultOptions
+) => {
+  const normalizedOptions = {
+    ...defaultOptions,
+    ...options
+  }
+
+  const create = () => {
+    if (!audio || isInit) return
+    source = audioCtx.createMediaElementSource(audio)
+
+    source?.connect(analyser)
+    analyser.connect(audioCtx.destination)
+
+    analyser.fftSize = normalizedOptions.fftSize
+
+    isInit = true
+  }
 
   const draw = () => {
     requestAnimationFrame(draw)
-    const data: Uint8Array = new Uint8Array(bufferLength)
-    analyser?.getByteFrequencyData(data)
 
-    const canvas = document.getElementById('canvas')! as HTMLCanvasElement
+    const bufferLength = analyser.frequencyBinCount
+    const buffer: Uint8Array = new Uint8Array(bufferLength)
+    analyser?.getByteFrequencyData(buffer)
+
+    const datas = new Array(bufferLength * 2)
+
+    for (let i = bufferLength; i > 0; i -= 1) {
+      datas[bufferLength - i] = buffer[i]
+      datas[datas.length - i] = buffer[bufferLength - i]
+    }
+
+    if (!canvas) return
     const ctx = canvas.getContext('2d')!
-    const width = bufferLength
-    const height = 200
-    canvas.width = width
+    const height = normalizedOptions.lineHeight
+    canvas.width = normalizedOptions.width
     canvas.height = height
 
-    ctx.fillStyle = 'rgb(0, 0, 0)'
-    ctx.fillRect(0, 0, width, height)
-    const barWidth = 1
+    ctx.fillStyle = 'transparent'
+    ctx.fillRect(0, 0, normalizedOptions.width, height)
+    const barWidth = normalizedOptions.width / datas.length
     let barHeight
     let x = 0
-    for (let i = 0; i < bufferLength; i += 1) {
-      barHeight = (data[i] / 255) * 200
+    for (let i = 0; i < datas.length; i += 1) {
+      barHeight = (datas[i] / 255) * normalizedOptions.lineHeight
 
-      ctx.fillStyle = `rgb(${barHeight + 100},50,50)`
+      ctx.fillStyle = normalizedOptions.bg
       ctx.fillRect(x, height, barWidth, -barHeight)
 
-      x += barWidth + 1
+      x += barWidth
     }
+    console.log(1)
   }
 
   return {
-    draw
+    draw,
+    create
   }
 }

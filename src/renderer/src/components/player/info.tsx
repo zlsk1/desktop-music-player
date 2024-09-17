@@ -1,16 +1,19 @@
 import { useMemo, useState, useEffect } from 'react'
 import {
-  RiDownloadLine as DownLoad
+  RiDownloadLine as DownLoad,
+  RiArrowUpDoubleLine as ArrowUpDouble
 } from '@remixicon/react'
 import { useMusicPlay } from '@renderer/hooks'
 import ColorThief from 'colorthief'
 import { getLuminance } from '@renderer/utils'
-import Detail from '../detail'
+import FullPlayer from '../full-player'
+import DefaultSongImg from '../default-song-img'
 
-function Info(): JSX.Element {
+function Info({ className }: {className: string | undefined}): JSX.Element {
   const { currentSong } = useMusicPlay()
   const [open, setOpen] = useState(false)
   const [linearBg, setLinearBg] = useState<string[]>([])
+  const [isHover, setIsHover] = useState(false)
 
   function getColors(url: string | undefined) {
     if (!url) return
@@ -25,7 +28,6 @@ function Info(): JSX.Element {
       const colors = colorThief.getPalette(imgElement, 3)
       const bg = colors.sort((a, b) => getLuminance(b) - getLuminance(a)).map((color) => color.join(', '))
       setLinearBg(bg)
-      console.log(bg)
     })
   }
 
@@ -42,26 +44,49 @@ function Info(): JSX.Element {
     [currentSong?.artists, currentSong?.artist]
   )
 
+  const onMouseEnter = () => {
+    setIsHover(true)
+  }
+
+  const onMouseLeave = () => {
+    setIsHover(false)
+  }
+
   return (
     <>
-      <div className="flex items-center flex-1 h-full px-6">
-        {
-          currentSong?.img
-            ? (
-              <img
-                src={`data:image/png;base64,${currentSong.img}`}
-                alt=""
-                className="w-12 h-12 mr-2 rounded-full cursor-pointer"
-                onClick={() => setOpen(true)}
-              />
-            )
-            : (
-              <div
-                className="w-12 h-12 mr-2 bg-slate-500 rounded-full cursor-pointer"
-                onClick={() => setOpen(true)}
-              />
-            )
-        }
+      <div className={`${className} flex items-center`}>
+        <div
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+        >
+          {
+            currentSong?.img
+              ? (
+                <div
+                  style={{ background: `url(data:image/png;base64,${currentSong?.img}) center/100% no-repeat` }}
+                  className="relative w-12 h-12 mr-2 rounded-full cursor-pointer"
+                  onClick={() => setOpen(true)}
+                >
+                  <div className={`${isHover ? 'opacity-100' : 'opacity-0'} transition-opacity`}>
+                    <div className="absolute inset-0 bg-gray-800 opacity-30 rounded-full" />
+                    <ArrowUpDouble className="absolute top-1/2 left-1/2 text-white -translate-x-1/2 -translate-y-1/2" size={28} />
+                  </div>
+                </div>
+              )
+              : (
+                <DefaultSongImg
+                  className="rounded-full cursor-pointer"
+                  content={(
+                    <div className={`${isHover ? 'opacity-100' : 'opacity-0'} transition-opacity`}>
+                      <div className="absolute inset-0 bg-gray-800 opacity-30 rounded-full" />
+                      <ArrowUpDouble className="absolute top-1/2 left-1/2 text-white -translate-x-1/2 -translate-y-1/2" size={28} />
+                    </div>
+                  )}
+                  onClick={() => setOpen(true)}
+                />
+              )
+          }
+        </div>
         <div>
           <div className="flex items-center">
             <span
@@ -75,7 +100,7 @@ function Info(): JSX.Element {
             <span
               title={artist}
               className="
-          inline-block max-w-28 text-xs text-ellipsis text-nowrap text-gray-400 overflow-hidden cursor-pointer select-none"
+          inline-block max-w-24 text-xs text-ellipsis text-nowrap text-gray-400 overflow-hidden cursor-pointer select-none"
             >
               {artist}
             </span>
@@ -85,7 +110,7 @@ function Info(): JSX.Element {
           </div>
         </div>
       </div>
-      <Detail visible={open} linearBg={linearBg} setVisible={setOpen} />
+      <FullPlayer visible={open} linearBg={linearBg} img={currentSong?.img} setVisible={setOpen} />
     </>
   )
 }

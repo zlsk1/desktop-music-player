@@ -7,7 +7,7 @@ export const useMusicPlay = () => {
     audio, songQueue, currentIndex, changing,
     setIndex, setCurrentPercent
   } = useMusicPlayStore()
-  const { setPlaySetting, getPlaySetting } = usePlaySetting()
+  const { getPlaySetting } = usePlaySetting()
 
   const currentSong = useMemo(() => songQueue[currentIndex], [songQueue, currentIndex])
 
@@ -32,34 +32,31 @@ export const useMusicPlay = () => {
     }
 
     setIndex(idx)
-    setPlaySetting({ index: idx })
   }
 
   const next = () => {
     getPlaySetting()
       .then(({ mode }) => {
+        audio!.autoplay = true // 切换时自动播放 结束后重置
         if (mode === 1) {
           const idx = Math.round(Math.random() * (songQueue.length - 1))
-          console.log(idx)
-
           updateIndex(idx)
           return
         }
         updateIndex(currentIndex)
-        play()
       })
   }
 
   const prev = () => {
     getPlaySetting()
       .then(({ mode }) => {
+        audio!.autoplay = true
         if (mode === 1) {
           const idx = Math.round(Math.random() * (songQueue.length - 1))
           updateIndex(idx)
           return
         }
         updateIndex(currentIndex, 'prev')
-        play()
       })
   }
 
@@ -67,7 +64,9 @@ export const useMusicPlay = () => {
     if (!audio) return
     audio.onended = () => {
       getPlaySetting()
-        .then(({ mode }) => {
+        .then(({ mode, autoplay }) => {
+          audio!.autoplay = autoplay
+
           if (mode === 2) {
             audio.loop = true
             return
@@ -87,6 +86,27 @@ export const useMusicPlay = () => {
     }
   }
 
+  const onPlay = (fn: Function) => {
+    if (!audio) return
+    audio.onplay = () => {
+      fn()
+    }
+  }
+
+  const onPause = (fn: Function) => {
+    if (!audio) return
+    audio.onpause = () => {
+      fn()
+    }
+  }
+
+  const loadedmetadata = (fn: Function) => {
+    if (!audio) return
+    audio.onloadeddata = () => {
+      fn()
+    }
+  }
+
   return {
     currentSong,
     play,
@@ -94,6 +114,9 @@ export const useMusicPlay = () => {
     next,
     prev,
     ended,
-    timeupdate
+    timeupdate,
+    onPlay,
+    onPause,
+    loadedmetadata
   }
 }
